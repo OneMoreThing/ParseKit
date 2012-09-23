@@ -18,6 +18,8 @@ To use Anypic self-hosted with ParseKit you need to follow the following steps:
 
 -add Facebook framework with DeprecatedHeaders folder
 
+-add ParseKit framework in Anypic
+
 -add "-all_load" in Other Linker Flags for Anypic target
 
 -add "-fno-objc-arc" for SCFacebook.m in Compile Sources section for Anypic target
