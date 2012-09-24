@@ -43,7 +43,7 @@ To use Anypic self-hosted with ParseKit you need to follow the following steps:
     //(Fill the URL scheme in Info.plist with your fbFACEBOOK_APP_ID or with the Hackbook app id fb210849718975311 and the bundle identifier as com.facebook.samples.Hackbook)
     
 
-See [FAQ](https://github.com/OneMoreThing/ParseKit/wiki/FAQ) page common errors and resolution.
+See [FAQ](https://github.com/OneMoreThing/ParseKit/wiki/FAQ) page for common errors and resolution.
 
 
 TODO:
