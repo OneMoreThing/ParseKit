@@ -40,7 +40,7 @@ To use Anypic self-hosted with ParseKit you need to follow the following steps:
     [Parse setApplicationId:@"http://localhost:3000" clientKey:@"66e5977931c7e48aa89c9da0ae5d3ffdff7f1a58e6819cbea062dda1fa050296"];    
     //(For testing purpose use Hackbook app id to login with facebook)
     [PFFacebookUtils initializeWithApplicationId:@"210849718975311"];
-    
+    //(Fill the URL scheme in Info.plist with your fbFACEBOOK_APP_ID or with the Hackbook app id fb210849718975311 and the bundle identifier as com.facebook.samples.Hackbook)
     
     
 
