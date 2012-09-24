@@ -1,7 +1,7 @@
 ParseKit
 ========
 
-ParseKit allows to use Anypic (ios app by parse.com/anypic) self-hosted replacing the Parse.com framework with DataKit (open source) framework.
+ParseKit allows to use Anypic (iOS app by parse.com/anypic) self-hosted replacing the Parse.com framework with DataKit (open source) framework.
 ParseKit was developed to test DataKit, currently ParseKit is still inefficient but useful at least to evaluate the use of DataKit.
 
 Thanks to Erik for your great work with DataKit and thanks to Parse.com team for Anypic.
