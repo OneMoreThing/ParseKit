@@ -14,23 +14,35 @@ To use Anypic self-hosted with ParseKit you need to follow the following steps:
 
 -remove Parse framework from Anypic
 
--add DataKit framework in Anypic
+-add DataKit project (DataKit.xcodeproj) on framework group in Anypic
 
--add Facebook framework with DeprecatedHeaders folder
+-add Facebook framework with DeprecatedHeaders folder on framework group in Anypic
 
--add ParseKit framework in Anypic
+-copy ParseKit folder in Anypic External folder and add folder on External group in Anypic project
 
--add "-all_load" in Other Linker Flags for Anypic target
+-add "-all_load" in "Other Linker Flags" for Anypic target
 
--add "-fno-objc-arc" for SCFacebook.m in Compile Sources section for Anypic target
+-add libDataKit.a in "Link Binary With Libraries" section for Anypic target
+
+-add "-fno-objc-arc" for SCFacebook.m in "Compile Sources" section for Anypic target
 
 -change Prefix.pch import of Parse framework as #import "Parse.h"
 
--replace protocol name PF_FBRequestDelegate in AppDelegate.h as FBRequestDelegate
+-rename protocol PF_FBRequestDelegate in AppDelegate.h as FBRequestDelegate
 
 -change entityId property in DKEntity.h from readonly to strong
 
 -follow the instruction in DataKit to create your backend server (localhost or for example on Amazon with an ec2 bitnami node.js image connected to mongohq service)
+
+-configure ParseKit for Anypic in AppDelegate.m with your self-hosted server parameters and facebook app id 
+
+    //(Parse is a wrapper for DKManager class in DataKit, see DataKit instruction)
+    [Parse setApplicationId:@"http://localhost:3000" clientKey:@"66e5977931c7e48aa89c9da0ae5d3ffdff7f1a58e6819cbea062dda1fa050296"];    
+    //(For testing purpose use Hackbook app id to login with facebook)
+    [PFFacebookUtils initializeWithApplicationId:@"210849718975311"];
+    
+    
+    
 
 
 TODO:
