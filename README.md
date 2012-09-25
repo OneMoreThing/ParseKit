@@ -50,7 +50,7 @@ TODO:
 
 -Develop an efficient way to implement Parse.com orQueryWithSubqueries and smooth table scrolling 
 
--Add push notifications and async messaging (currently not implemented in DataKit), probably with Slanger
+-Add push notifications and async messaging (currently not implemented in DataKit), probably with node-apn
 
 -Add ACL (currently not implemented in DataKit)
 
