@@ -30,7 +30,7 @@ To use Anypic or Anywall self-hosted with ParseKit you need to follow the follow
 
 -replace all occurence of  #import <Parse/Parse.h> of Parse framework as #import "Parse.h"
 
--rename protocol PF_FBRequestDelegate in AppDelegate.h as FBRequestDelegate
+-for Anypic only, rename protocol PF_FBRequestDelegate in AppDelegate.h as FBRequestDelegate
 
 -follow the instruction in DataKit to create your backend server (localhost or for example on Amazon with an ec2 bitnami node.js image connected to mongohq service)
 
