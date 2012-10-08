@@ -56,6 +56,6 @@ TODO:
 
 -Add ACL (currently not implemented in DataKit)
 
--Add js Api for Anypic-web site
+-Add js API for Anypic-web site
 
 -Option to store/load images on Amazon S3 bucket
