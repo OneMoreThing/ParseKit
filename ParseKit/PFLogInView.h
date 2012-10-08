@@ -10,6 +10,6 @@
 
 @interface PFLogInView : UIView
 
-    @property (nonatomic, retain) UIView *logo;
+    @property (nonatomic, strong) UIView *logo;
 
 @end

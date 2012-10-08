@@ -10,15 +10,15 @@
 
 #import <Foundation/Foundation.h>
 
-@interface PFObject : NSObject {
-     DKEntity * dkEntity;
-}
+@interface PFObject : NSObject 
 
-@property (strong, nonatomic) DKEntity * dkEntity;
-@property (nonatomic, retain) NSString *objectId;
+@property (nonatomic, strong) DKEntity * dkEntity;
+@property (nonatomic, strong) NSString *objectId;
 @property (readonly) NSDate *createdAt;
 @property (readonly) NSString *className;
-@property (nonatomic, retain) PFACL *ACL;
+@property (nonatomic, strong) PFACL *ACL;
+
+@property (nonatomic,assign) BOOL hasBeenFetched;
 
 + (PFObject *)objectWithClassName:(NSString *)className;
 + (PFObject *)objectWithoutDataWithClassName:(NSString *)className
@@ -37,5 +37,6 @@
 - (BOOL)delete;
 - (void)deleteEventually;
 - (void)setValue:(id)value forKey:(NSString *)key;
+- (PFObject *)fetchIfNeeded;
 
 @end

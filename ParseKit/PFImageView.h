@@ -11,7 +11,7 @@
 
 @interface PFImageView : AsyncImageView
 
-    @property (nonatomic, retain) PFFile *file;
+    @property (nonatomic, strong) PFFile *file;
     - (void)loadInBackground;
     - (void)loadInBackground:(void (^)(UIImage *image, NSError *error))completion;
 

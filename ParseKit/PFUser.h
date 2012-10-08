@@ -8,13 +8,20 @@
 
 #import <Foundation/Foundation.h>
 
-#define kUserClassName @"User"
 
 @interface PFUser : PFObject
+
+@property (nonatomic, strong) NSString *password;
+@property (nonatomic, strong) NSString *username;
 
     + (PFUser *)currentUser;
     + (void)logOut;
     + (PFQuery *)query;
     + (void)setCurrentUser:(PFUser *)user;
+	+ (PFUser *)user;
+	+ (void)logInWithUsernameInBackground:(NSString *)username
+								 password:(NSString *)password
+									block:(PFUserResultBlock)block;
+	- (void)signUpInBackgroundWithBlock:(PFBooleanResultBlock)block;
 
 @end

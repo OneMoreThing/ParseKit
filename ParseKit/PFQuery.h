@@ -8,9 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface PFQuery : NSObject {
-    DKQuery * dkQuery;
-}
+@interface PFQuery : NSObject 
 @property (strong, nonatomic) DKQuery * dkQuery;
 @property (nonatomic) NSInteger limit;
 @property (nonatomic,readwrite, assign) PFCachePolicy cachePolicy;
@@ -24,6 +22,12 @@
 - (void)whereKey:(NSString *)key notEqualTo:(id)object;
 - (void)whereKey:(NSString *)key containedIn:(NSArray *)array;
 - (void)whereKey:(NSString *)key matchesKey:(NSString *)otherKey inQuery:(PFQuery *)query;
+
+   //"2d" spatial index must be created on the key
+- (void)whereKey:(NSString *)key nearGeoPoint:(PFGeoPoint *)geopoint withinKilometers:(double)maxDistance;
+- (void)whereKey:(NSString *)key nearGeoPoint:(PFGeoPoint *)geopoint withinMiles:(double)maxDistance;
+- (void)whereKey:(NSString *)key nearGeoPoint:(PFGeoPoint *)geopoint withinRadians:(double)maxDistance;
+
 - (void)orderByAscending:(NSString *)key;
 - (void)orderByDescending:(NSString *)key;
 - (void)getObjectInBackgroundWithId:(NSString *)objectId
@@ -34,4 +38,5 @@
 - (BOOL)hasCachedResult;
 
 - (void)performMapReduce:(DKMapReduce *)mapReduce inBackgroundWithBlock:(void (^)(id result, NSError *error))block;
+
 @end

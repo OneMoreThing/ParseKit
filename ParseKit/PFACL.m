@@ -14,7 +14,8 @@
 + (PFACL *)ACLWithUser:(PFUser *)user{return [[self alloc] init];}
 - (void)setPublicReadAccess:(BOOL)allowed{}
 + (void)setDefaultACL:(PFACL *)acl withAccessForCurrentUser:(BOOL)currentUserAccess{}
-- (id)copyWithZone:(NSZone *)zone{return nil;}
+- (id)copyWithZone:(NSZone *)zone{return [PFACL ACL];}
 - (void)setWriteAccess:(BOOL)allowed forUser:(PFUser *)user{}
+- (void)setPublicWriteAccess:(BOOL)allowed{}
 
 @end

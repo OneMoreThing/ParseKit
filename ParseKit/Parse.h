@@ -10,6 +10,7 @@
 #import "PFConstants.h"
 #import "PFACL.h"
 #import "PFObject.h"
+#import "PFGeoPoint.h"
 #import "PFQuery.h"
 #import "PFUser.h"
 #import "PFFile.h"
@@ -26,4 +27,5 @@
 
 @interface Parse : NSObject
     + (void)setApplicationId:(NSString *)applicationId clientKey:(NSString *)clientKey;
+    + (void)setRequestLogEnabled:(BOOL)flag;
 @end

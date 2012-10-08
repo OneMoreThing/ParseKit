@@ -10,6 +10,6 @@
 
 @interface PFTableViewCell : UITableViewCell
 
-    @property (nonatomic, retain) PFImageView *imageView;
+    @property (nonatomic, strong) PFImageView *imageView;
 
 @end

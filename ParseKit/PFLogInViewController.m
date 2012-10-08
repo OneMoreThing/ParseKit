@@ -12,7 +12,7 @@
 #import "SCFacebook.h"
 #import "PFQuery.h"
 #import "PFUser.h"
-#import "PAPConstants.h"
+#import "PFConstants.h"
 
 @interface PFLogInViewController ()
     @property (strong, nonatomic) IBOutlet UIButton *button;
@@ -51,16 +51,16 @@
 -(void) loginUser:(NSString*) facebookId{
     
     PFQuery *query = [PFUser query];
-    [query whereKey:kPAPUserFacebookIDKey equalTo:facebookId];
+    [query whereKey:kUserFacebookIDKey equalTo:facebookId];
     
     NSError *error = nil;
     NSArray *array = [query findObjects:&error];
     if([array count] > 0)
         [PFUser setCurrentUser:(PFUser*)[array objectAtIndex:0]];
     else{
-        PFUser* newUser= (PFUser*)[PFUser objectWithClassName: kUserClassName];
+        PFUser* newUser= [PFUser user];
         if (facebookId && facebookId != 0) {
-            [newUser setObject:facebookId forKey:kPAPUserFacebookIDKey];
+            [newUser setObject:facebookId forKey:kUserFacebookIDKey];
             BOOL saved = [newUser.dkEntity save];
             if(!saved){
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post load/save user, server error" message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];

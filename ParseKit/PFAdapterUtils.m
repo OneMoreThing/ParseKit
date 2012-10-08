@@ -2,61 +2,93 @@
 //  PFAdapterUtils.m
 //  ParseKit
 //
-//  Created by Denis Berton on 02/09/12.
+//  Created by Denis Berton on 22/09/12.
 //
 //
 
 #import "PFAdapterUtils.h"
 
+#ifdef ANYWALL
+#import "PAWAppDelegate.h"
+#endif
+
 @implementation PFAdapterUtils
 
-
-+(id)castObject:(id) obj{
++(id)convertObjToDK:(id) obj{
     if([obj isKindOfClass:[PFFile class]])
         return ((PFFile*)obj).dkFile.name;
     if([obj isKindOfClass:[PFUser class]] || [obj isKindOfClass:[PFObject class]])
         return [((PFObject*)obj).dkEntity entityId];
+    if([obj isKindOfClass:[PFGeoPoint class]]){
+		return [NSArray arrayWithObjects: [NSNumber numberWithDouble:((PFGeoPoint*)obj).longitude],
+                          				  [NSNumber numberWithDouble: ((PFGeoPoint*)obj).latitude], nil];		
+	}
     return obj;
 }
 
-+(NSArray*)convertArray:(NSArray*) array{
++(id)convertObjToPF:(id) obj{
+	if([obj isKindOfClass:[DKEntity class]]){
+		DKEntity* entity = (DKEntity*)obj;
+		PFObject * pfObj = nil;
+		if([entity.entityName isEqualToString: kUserClassName])
+			pfObj = [PFUser objectWithClassName:entity.entityName];
+		else
+			pfObj = [PFObject objectWithClassName:entity.entityName];
+		pfObj.dkEntity = entity;
+		pfObj.hasBeenFetched = YES;
+		return pfObj;
+	}
+	else if([obj isKindOfClass:[NSArray class]]){
+	    NSArray* arr = (NSArray*)obj;
+	    return [PFGeoPoint geoPointWithLatitude:[(NSNumber*)arr[1] doubleValue] longitude:[(NSNumber*)arr[0] doubleValue]];
+	}
+    return obj;
+}
+
++(NSArray*)convertArrayToDK:(NSArray*) array{
     NSMutableArray* newArray = [[NSMutableArray alloc] init];
     for (id el in array) {
-        if([el isKindOfClass:[DKEntity class]]){
-            DKEntity* entity = (DKEntity*)el;
-            PFObject * obj = nil;
-            if([entity.entityName isEqualToString: kUserClassName])
-                obj = [PFUser objectWithoutDataWithClassName:entity.entityName
-                                                    objectId:entity.entityId];
-            else
-                obj = [PFObject objectWithoutDataWithClassName:entity.entityName
-                                                      objectId:entity.entityId];
-        
-            obj.dkEntity = entity;
-            [newArray addObject:obj];
-        }
-        else if([el isKindOfClass:[PFUser class]]){
-            [newArray addObject:((PFUser*)el).dkEntity.entityId];
-        }
-        else{
-            return array;
-        }
+		[newArray addObject: [self convertObjToDK:el]];
     }
     return newArray;
 }
 
-+ (BOOL) checkFileKey:(NSString *)key{
++(NSArray*)convertArrayToPF:(NSArray*) array{
+    NSMutableArray* newArray = [[NSMutableArray alloc] init];
+    for (id el in array) {
+		[newArray addObject: [self convertObjToPF:el]];
+    }
+    return newArray;
+}
+
++ (BOOL) isPFFileKey:(NSString *)key{
+	#ifdef ANYPIC
     return [key isEqualToString: kPAPUserProfilePicSmallKey]||
            [key isEqualToString: kPAPUserProfilePicMediumKey] ||
            [key isEqualToString: kPAPActivityPhotoKey] ||
            [key isEqualToString: kPAPPhotoPictureKey] ||
-           [key isEqualToString: kPAPPhotoThumbnailKey];
+		   [key isEqualToString: kPAPPhotoThumbnailKey];
+	#endif
+	return NO;	
 }
 
-+ (BOOL) checkUserKey:(NSString *)key{
++ (BOOL) isPFUserKey:(NSString *)key{
+	#ifdef ANYPIC
     return [key isEqualToString: kPAPPhotoUserKey] ||
            [key isEqualToString: kPAPActivityFromUserKey] ||
            [key isEqualToString: kPAPActivityToUserKey];
+	#endif
+	#ifdef ANYWALL
+	return [key isEqualToString: kPAWParseUserKey];
+	#endif
+	return NO;
+}
+
++ (BOOL) isPFGeoPointKey:(NSString *)key{
+	#ifdef ANYWALL
+	return [key isEqualToString: kPAWParseLocationKey];
+	#endif
+    return NO;
 }
 
 @end

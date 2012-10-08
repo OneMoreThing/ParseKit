@@ -13,19 +13,23 @@
 @interface PFQueryTableViewController :  UITableViewController <SSPullToRefreshViewDelegate>
 
 @property (nonatomic, strong) SSPullToRefreshView *pullToRefreshView;
-@property (nonatomic, retain) NSString *className;
+@property (nonatomic, strong) NSString *className;
 @property (nonatomic, assign) BOOL pullToRefreshEnabled;
 @property (nonatomic, assign) BOOL paginationEnabled;
+@property (nonatomic,strong) NSString *keyToDisplay;
 
 - (id)initWithStyle:(UITableViewStyle)otherStyle;
 - (void)objectsDidLoad:(NSError *)error;
 - (PFQuery *)queryForTable;
 - (void)loadObjects;
 - (void)loadNextPage;
-- (PFTableViewCell *)tableView:(UITableView *)tableView
+- (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
                         object:(PFObject *)object;
 - (PFObject *)objectAtIndexPath:(NSIndexPath *)indexPath;
+- (void)objectsWillLoad;
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForNextPageAtIndexPath:(NSIndexPath *)indexPath;
+
 
 //DKQueryTableViewController implementation with PFQuery and PFTableViewCell
 //

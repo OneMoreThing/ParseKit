@@ -15,4 +15,8 @@
     [DKManager setAPISecret:clientKey];
 }
 
++ (void)setRequestLogEnabled:(BOOL)flag{
+	[DKManager setRequestLogEnabled:flag];
+}
+
 @end

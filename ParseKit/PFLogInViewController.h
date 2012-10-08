@@ -13,9 +13,9 @@
 @interface PFLogInViewController : UIViewController <UITextFieldDelegate> 
 
     @property (nonatomic) PFLogInFields fields;
-    @property (nonatomic, retain) PFLogInView *logInView;
+    @property (nonatomic, strong) PFLogInView *logInView;
     @property (nonatomic, assign) id<PFLogInViewControllerDelegate> delegate;
-    @property (nonatomic, retain) NSArray *facebookPermissions;
+    @property (nonatomic, strong) NSArray *facebookPermissions;
 
 @end
 

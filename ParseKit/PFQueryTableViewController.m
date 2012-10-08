@@ -1,4 +1,4 @@
-//
+	//
 //  PFQueryTableViewController.m
 //  ParseKit
 //
@@ -6,7 +6,9 @@
 //  Copyright (c) 2012 Denis Berton. All rights reserved.
 //
 
-#import "PFQueryTableViewController.m"
+#import "PFQueryTableViewController.h"
+#import "PFTableViewCell.h"
+#import "PFQuery.h"
 
 // Macros
 #define DKSynthesize(x) @synthesize x = x##_;
@@ -38,6 +40,14 @@
     self.entityName = className_;
 }
 
+-(NSString*) keyToDisplay{
+    return self.displayedTitleKey;
+}
+-(void) setKeyToDisplay:(NSString *)keyToDisplay_{
+    self.displayedTitleKey = keyToDisplay_;
+}
+
+
 - (id)initWithStyle:(UITableViewStyle)otherStyle{
     return [self initWithStyle:otherStyle entityName:@""];
 }
@@ -55,9 +65,9 @@
 }
 
 - (void)loadObjects{
-    if(self.pullToRefreshEnabled)
-        [self.pullToRefreshView startLoadingAndExpand:YES];
-    [self reloadInBackground];
+	if(self.pullToRefreshEnabled)
+		[self.pullToRefreshView startLoadingAndExpand:YES];
+	[self reloadInBackground];
 }
 
 - (void)loadNextPage{
@@ -83,7 +93,7 @@
     self.pullToRefreshView = nil;
 }
 
-- (PFTableViewCell *)tableView:(UITableView *)tableView
+- (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
                         object:(PFObject *)object{
 
@@ -113,12 +123,27 @@
 }
 
 - (PFObject *)objectAtIndexPath:(NSIndexPath *)indexPath{
-    return [self.objects objectAtIndex:indexPath.row];
+	return [self.objects objectAtIndex:indexPath.row];
 }
 
 - (void)pullToRefreshViewDidStartLoading:(SSPullToRefreshView *)view {
-        [self loadObjects];
+	[self loadObjects];
 }
+
+- (void)objectsWillLoad{
+	
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForNextPageAtIndexPath:(NSIndexPath *)indexPath{
+	if ([self tableViewCellIsNextPageCellAtIndexPath:indexPath]) {
+        return [self tableViewNextPageCell:tableView];
+    }
+	else{
+        return [self tableView:tableView cellForNextPageAtIndexPath:indexPath];
+	}
+}
+
+
 
 //DKQueryTableViewController implementation
 //
@@ -185,7 +210,7 @@ DKSynthesize(currentOffset)
     }
     
     if (results.count > 0) {
-        [self.objects addObjectsFromArray:results];
+		[self.objects addObjectsFromArray:results];
     }
     
     self.currentOffset += results.count;
@@ -210,7 +235,7 @@ DKSynthesize(currentOffset)
         
         dispatch_async(q, ^{
             [self queryTableWillReload];
-            [self.tableView reloadData];
+			[self.tableView reloadData];
             [self queryTableDidReload];
             
             if (callback != NULL) {
@@ -265,6 +290,10 @@ DKSynthesize(currentOffset)
 }
 
 - (void)reloadInBackgroundWithBlock:(void (^)(NSError *))block {
+    if (self.isLoading) {
+        return;
+    }
+	
     // Display search bar if necessary
     if ([self hasSearchBar]) {
         self.tableView.tableHeaderView = self.searchBar;
@@ -275,10 +304,8 @@ DKSynthesize(currentOffset)
     
     self.hasMore = NO;
     self.currentOffset = 0;
-    
-    [self.objects removeAllObjects];
-    [self.tableView reloadData];
-    
+	[self.objects removeAllObjects];
+	[self.tableView reloadData];
     [self appendNextPageWithFinishCallback:block];
 }
 
@@ -290,6 +317,7 @@ DKSynthesize(currentOffset)
 }
 
 - (void)queryTableWillReload {
+	[self objectsWillLoad];
     [self.pullToRefreshView startLoading];
 }
 
@@ -298,7 +326,6 @@ DKSynthesize(currentOffset)
 }
 
 - (void)postProcessResults {
-    // stub
     [self objectsDidLoad:nil];
 }
 
@@ -343,6 +370,7 @@ DKSynthesize(currentOffset)
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.objects.count + (self.hasMore ? 1 : 0);
 }
+
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     id object = [self objectAtIndexPath:indexPath];

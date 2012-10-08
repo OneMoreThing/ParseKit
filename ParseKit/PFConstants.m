@@ -8,5 +8,10 @@
 
 #import "PFConstants.h"
 
-NSInteger const kPFErrorObjectNotFound = 504;
-NSInteger const kPFErrorCacheMiss = 501;
+NSInteger const kPFErrorObjectNotFound = 101;
+NSInteger const kPFErrorCacheMiss = 120;
+
+NSString *const kUserClassName = @"User";
+NSString *const kUserNameKey = @"username";
+NSString *const kUserPasswordKey = @"password";
+NSString *const kUserFacebookIDKey =@"facebookId";

@@ -37,3 +37,10 @@ typedef void (^PFDataResultBlock)(NSData *data, NSError *error);
 typedef void (^PFDataStreamResultBlock)(NSInputStream *stream, NSError *error);
 typedef void (^PFProgressBlock)(int percentDone);
 
+//Field keys
+extern NSString *const kUserClassName;
+extern NSString *const kUserNameKey;
+extern NSString *const kUserPasswordKey;
+extern NSString *const kUserFacebookIDKey;
+
+

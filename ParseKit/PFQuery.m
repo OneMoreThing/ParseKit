@@ -86,15 +86,15 @@
 }
 
 - (void)whereKey:(NSString *)key equalTo:(id)object{
-    [self.dkQuery whereKey:key equalTo:[PFAdapterUtils castObject: object]];
+    [self.dkQuery whereKey:key equalTo:[PFAdapterUtils convertObjToDK: object]];
 }
 
 - (void)whereKey:(NSString *)key notEqualTo:(id)object{
-    [self.dkQuery whereKey:key notEqualTo:[PFAdapterUtils castObject: object]];
+    [self.dkQuery whereKey:key notEqualTo:[PFAdapterUtils convertObjToDK: object]];
 }
 
 - (void)whereKey:(NSString *)key containedIn:(NSArray *)array{
-    [self.dkQuery whereKey:key containedIn: [PFAdapterUtils convertArray:array]];
+    [self.dkQuery whereKey:key containedIn: [PFAdapterUtils convertArrayToDK:array]];
 }
 
 + (PFQuery *)orQueryWithSubqueries:(NSArray *)queries{
@@ -172,16 +172,15 @@ NSInteger comparator(id id1, id id2, void *context)
 
 - (NSArray *)findObjects:(NSError **)error{
     NSArray* array = [self findAll:error];
-    return [PFAdapterUtils convertArray:array];
+    return [PFAdapterUtils convertArrayToPF:array];
 }
 
 - (void)findObjectsInBackgroundWithBlock:(PFArrayResultBlock)block{
-    block = [block copy];
     dispatch_queue_t q = dispatch_get_current_queue();
     dispatch_async([DKManager queue], ^{
         NSError *error = nil;
-        NSArray* array = [self findAll:&error];
-        NSArray* newArray = [PFAdapterUtils convertArray:array];
+		NSArray* array = [self findAll:&error];
+		NSArray* newArray = [PFAdapterUtils convertArrayToPF:array];
         if (block != NULL) {
             dispatch_async(q, ^{
                 block(newArray, error);
@@ -195,7 +194,7 @@ NSInteger comparator(id id1, id id2, void *context)
     dispatch_async([DKManager queue], ^{
         NSError *error = nil;
         NSArray* array = [self findAll:&error];
-        NSArray* newArray = [PFAdapterUtils convertArray:array];
+		NSArray* newArray = [PFAdapterUtils convertArrayToPF:array];
         if (selector != NULL) {
             dispatch_async(q, ^{
                 if([target respondsToSelector:selector]){
@@ -210,7 +209,6 @@ NSInteger comparator(id id1, id id2, void *context)
 }
 
 - (void)countObjectsInBackgroundWithBlock:(PFIntegerResultBlock)block{
-    block = [block copy];
     dispatch_queue_t q = dispatch_get_current_queue();
     dispatch_async([DKManager queue], ^{
         NSError *error = nil;
@@ -248,4 +246,19 @@ NSInteger comparator(id id1, id id2, void *context)
     [self.dkQuery performMapReduce:mapReduce inBackgroundWithBlock:block];
 }
 
+- (void)whereKey:(NSString *)key nearGeoPoint:(PFGeoPoint *)geopoint withinKilometers:(double)maxDistance{
+	double earthRadius = 6378; // km  
+	double radians = maxDistance/earthRadius; //to radians
+    [self.dkQuery whereKey:key nearPoint:[PFAdapterUtils convertObjToDK: geopoint] withinDistance:[NSNumber numberWithDouble:radians]];
+}
+
+- (void)whereKey:(NSString *)key nearGeoPoint:(PFGeoPoint *)geopoint withinMiles:(double)maxDistance{
+	double earthRadius = 3959; // miles
+	double radians = maxDistance/earthRadius; //to radians
+    [self.dkQuery whereKey:key nearPoint:[PFAdapterUtils convertObjToDK: geopoint] withinDistance:[NSNumber numberWithDouble:radians]];
+}
+
+- (void)whereKey:(NSString *)key nearGeoPoint:(PFGeoPoint *)geopoint withinRadians:(double)maxDistance{
+    [self.dkQuery whereKey:key nearPoint:[PFAdapterUtils convertObjToDK: geopoint] withinDistance:[NSNumber numberWithDouble:maxDistance]];
+}
 @end
