@@ -28,7 +28,7 @@ To use Anypic or Anywall self-hosted with ParseKit you need to follow the follow
 
 -add "-fno-objc-arc" for SCFacebook.m in "Compile Sources" section for Anypic/Anywall target
 
--replace all occurence of  #import <Parse/Parse.h> of Parse framework as #import "Parse.h"
+-replace all occurrences of  #import <Parse/Parse.h> of Parse framework as #import "Parse.h"
 
 -for Anypic only, rename protocol PF_FBRequestDelegate in AppDelegate.h as FBRequestDelegate
 
