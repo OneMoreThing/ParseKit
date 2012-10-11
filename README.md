@@ -51,12 +51,15 @@ See [FAQ](https://github.com/OneMoreThing/ParseKit/wiki/FAQ) page for common err
 
 TODO:
  
--Add push notifications and async messaging (currently not implemented in DataKit)
-
--Add ACL (currently not implemented in DataKit)
+-Integrate deployd.com as backend for ParseKit
 
 -Add js API for Anypic-web site
 
--Develop an efficient way to implement Parse.com orQueryWithSubqueries
+-Add ACL (currently not implemented in DataKit)
 
 -Option to store/load images on Amazon S3 bucket
+
+-Add push notifications and async messaging (currently not implemented in DataKit)
+
+-Develop an efficient way to implement Parse.com orQueryWithSubqueries
+
