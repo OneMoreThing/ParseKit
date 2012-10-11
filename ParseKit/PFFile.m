@@ -19,7 +19,7 @@
 - (BOOL)isDataAvailable {
     if(self.absoluteUrl)
         return YES;
-    else return [self url] != nil;
+    else return (self.dkFile.data != nil ||  self.dkFile.name.length > 0); //[self url] != nil;
 }
 
 - (NSString *)url {
@@ -30,6 +30,18 @@
     self.absoluteUrl = [url absoluteString];
     return self.url;
 }
+
+- (void)urlInBackgroundWithBlock:(void (^)(NSURL *publicURL, NSError *error))block {
+    if(self.absoluteUrl){
+        block([NSURL URLWithString:self.absoluteUrl],nil);
+        return;
+    }
+    [self.dkFile generatePublicURLInBackgroundWithBlock:^(NSURL *publicURL, NSError *error){
+        self.absoluteUrl = [publicURL absoluteString];
+        block(publicURL,error);
+    }];
+}
+
 
 + (id)fileWithData:(NSData *)data{
     PFFile *file = [[self alloc] init];

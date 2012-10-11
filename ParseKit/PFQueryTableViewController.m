@@ -143,7 +143,20 @@
 	}
 }
 
+- (void)scrollViewWillBeginDragging:(UIScrollView *)activeScrollView {
+    dispatch_queue_t q = [DKManager queue];
+    if(q){
+        dispatch_suspend(q);
+    }
+}
 
+//- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+    dispatch_queue_t q = [DKManager queue];
+    if(q){
+        dispatch_resume(q);
+    }
+}
 
 //DKQueryTableViewController implementation
 //

@@ -10,7 +10,7 @@
 #import "SSPullToRefreshView.h"
 
 
-@interface PFQueryTableViewController :  UITableViewController <SSPullToRefreshViewDelegate>
+@interface PFQueryTableViewController :  UITableViewController <SSPullToRefreshViewDelegate,UIScrollViewDelegate>
 
 @property (nonatomic, strong) SSPullToRefreshView *pullToRefreshView;
 @property (nonatomic, strong) NSString *className;

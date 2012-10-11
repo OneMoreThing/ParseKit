@@ -11,15 +11,17 @@
 @implementation PFImageView
 
 - (void)loadInBackground{
-    NSError *error = nil;
-    NSURL * url =[self.file.dkFile generatePublicURL:&error];
-    [self setImageURL:url];
+    [self loadInBackground:^(UIImage *image, NSError *error){
+        if(error)
+            NSLog(@"fetch image error");
+    }];
 }
 
 - (void)loadInBackground:(void (^)(UIImage *image, NSError *error))completion{
-    [self loadInBackground];
-    NSError *error = nil;
-    completion(self.image, error);
+    [self.file urlInBackgroundWithBlock:^(NSURL *publicURL, NSError *error){
+        [self setImageURL:publicURL];
+        completion(self.image, error);        
+    }];
 }
 
 @end

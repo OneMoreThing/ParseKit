@@ -9,6 +9,10 @@
 
 #import "PFObject.h"
 
+@interface PFObject ()
+    @property (nonatomic, strong) NSMutableDictionary *pfCache;
+@end
+
 @implementation PFObject
 
 @synthesize dkEntity;
@@ -29,6 +33,7 @@
     if (self) {
         self.dkEntity = [DKEntity entityWithName:entityName];
 		self.hasBeenFetched = NO;
+        self.pfCache = [NSMutableDictionary new];        
     }
     return self;
 }
@@ -46,11 +51,16 @@
 }
 
 - (id)objectForKey:(NSString *)key{
+   id obj = [self.pfCache objectForKey:key];
+   if (obj != nil)
+        return obj;
+        
    if([PFAdapterUtils isPFFileKey:key]){
       NSString *fileName= [self.dkEntity objectForKey:key];
-       if(fileName && [DKFile fileExists:fileName]){
+       if(fileName){ //&& [DKFile fileExists:fileName]){
            PFFile *file = [PFFile fileWithData:nil];
            file.dkFile = [DKFile fileWithName:fileName];
+           [self.pfCache setObject:file forKey:key];
            return file;
        }
        return nil;
@@ -66,12 +76,16 @@
        [query whereKey:@"_id" equalTo:userId];
        NSError *error = nil;
        NSArray *array = [query findObjects:&error];
-       if([array count] > 0)
-           return(PFUser*)[array objectAtIndex:0];
+       if([array count] > 0){
+           PFUser* user = (PFUser*)[array objectAtIndex:0];
+           [self.pfCache setObject:user forKey:key];
+           return user;
+       }
    }
    else if([PFAdapterUtils isPFGeoPointKey:key]){
 	   NSArray* arr = [self.dkEntity objectForKey:key];
 	   PFGeoPoint* point = [PFAdapterUtils convertObjToPF:arr];
+       [self.pfCache setObject:point forKey:key];
 	   return point;
    }
    return [self.dkEntity objectForKey:key];
@@ -90,6 +104,7 @@
             [DKFile deleteFile:fileName error:&error];
         }
     }
+    [self.pfCache removeObjectForKey:key];
     [self.dkEntity removeObjectForKey:key];
 	self.hasBeenFetched = NO;
 }
@@ -101,6 +116,7 @@
 
 - (void)removeObject:(id)object forKey:(NSString *)key{
     [self.dkEntity pullObject:[PFAdapterUtils convertObjToDK:object] forKey: key];
+    [self.pfCache removeObjectForKey:key];
 	self.hasBeenFetched = NO;
 }
 
@@ -138,6 +154,7 @@
         NSError *error = nil;
         [self.dkEntity refresh:&error];
 		self.hasBeenFetched = YES;
+        [self.pfCache removeAllObjects];
         if (selector != NULL) {
             dispatch_async(q, ^{
                 if([target respondsToSelector:selector]){
@@ -159,6 +176,7 @@
 		if(!self.hasBeenFetched){
 			[self.dkEntity refresh:&error];
 			self.hasBeenFetched = YES;
+            [self.pfCache removeAllObjects];
 		}
         if (block != NULL) {
             dispatch_async(q, ^{
@@ -185,6 +203,7 @@
 	if(!self.hasBeenFetched){
         NSError *error = nil;
         [self.dkEntity refresh:&error];
+        [self.pfCache removeAllObjects];
 		self.hasBeenFetched = YES;
 	}
     return self;

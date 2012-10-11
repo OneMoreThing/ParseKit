@@ -20,4 +20,6 @@
 - (void)saveInBackgroundWithBlock:(PFBooleanResultBlock)block;
 - (void)getDataInBackgroundWithBlock:(PFDataResultBlock)block;
 
+- (void)urlInBackgroundWithBlock:(void (^)(NSURL *publicURL, NSError *error))block;
+
 @end
