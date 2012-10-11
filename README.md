@@ -49,13 +49,13 @@ See [FAQ](https://github.com/OneMoreThing/ParseKit/wiki/FAQ) page for common err
 
 
 TODO:
-
--Develop an efficient way to implement Parse.com orQueryWithSubqueries and smooth table scrolling 
-
+ 
 -Add push notifications and async messaging (currently not implemented in DataKit)
 
 -Add ACL (currently not implemented in DataKit)
 
 -Add js API for Anypic-web site
+
+-Develop an efficient way to implement Parse.com orQueryWithSubqueries
 
 -Option to store/load images on Amazon S3 bucket
