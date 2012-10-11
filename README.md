@@ -3,7 +3,7 @@ ParseKit
 
 ParseKit allows to use Anypic and Anywall (iOS apps by parse.com/anypic parse.com/anywall) self-hosted replacing the Parse.com framework with DataKit (open source) framework.
 ParseKit was developed to test DataKit, currently ParseKit is still inefficient but useful at least to evaluate the use of DataKit.
-ParseKit is currently under development.
+ParseKit is currently under development, the goal is to create a framework for use in a production environment.
 
 Thanks to Erik for your great work with DataKit and thanks to Parse.com team for Anypic and Anywall.
 
