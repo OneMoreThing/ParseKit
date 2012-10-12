@@ -15,7 +15,7 @@ To use Anypic or Anywall self-hosted with ParseKit you need to follow the follow
 
 -remove Parse framework from Anypic/Anywall
 
--add (DataKit project modified for ParseKit)[https://github.com/OneMoreThing/DataKit] (DataKit.xcodeproj) on framework group in Anypic/Anywall
+-add [DataKit project modified for ParseKit](https://github.com/OneMoreThing/DataKit) (DataKit.xcodeproj) on framework group in Anypic/Anywall
 
 -add Facebook framework with DeprecatedHeaders folder on framework group in Anypic/Anywall
 
