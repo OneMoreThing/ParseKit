@@ -8,10 +8,6 @@
 
 #import "PFAdapterUtils.h"
 
-#ifdef ANYWALL
-#import "PAWAppDelegate.h"
-#endif
-
 @implementation PFAdapterUtils
 
 +(id)convertObjToDK:(id) obj{

@@ -8,6 +8,10 @@
 
 #import "PFApplicationKey.h"
 
+#ifdef ANYWALL
+#import "PAWAppDelegate.h"
+#endif
+
 @implementation PFApplicationKey
 
 + (BOOL) isPFFileKey:(NSString *)key{
