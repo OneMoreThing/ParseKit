@@ -22,6 +22,7 @@
 @property (nonatomic, strong, readwrite) UISearchBar *searchBar;
 @property (nonatomic, strong) UIButton *searchOverlay;
 @property (nonatomic, assign) BOOL searchTextChanged;
+@property (nonatomic, strong) NSMutableArray * orSkip;
 @end
 
 @interface PFQueryTableNextPageCell : PFTableViewCell
@@ -31,11 +32,10 @@
 
 @implementation PFQueryTableViewController 
 
-@synthesize pullToRefreshView;
-
 -(NSString*) className{
     return self.entityName;
 }
+
 -(void) setClassName:(NSString *)className_{
     self.entityName = className_;
 }
@@ -43,17 +43,13 @@
 -(NSString*) keyToDisplay{
     return self.displayedTitleKey;
 }
+
 -(void) setKeyToDisplay:(NSString *)keyToDisplay_{
     self.displayedTitleKey = keyToDisplay_;
 }
 
-
 - (id)initWithStyle:(UITableViewStyle)otherStyle{
     return [self initWithStyle:otherStyle entityName:@""];
-}
-
-- (void)objectsDidLoad:(NSError *)error{
-    //[self queryTableDidReload];
 }
 
 - (PFQuery *)queryForTable{
@@ -65,8 +61,6 @@
 }
 
 - (void)loadObjects{
-	if(self.pullToRefreshEnabled)
-		[self.pullToRefreshView startLoadingAndExpand:YES];
 	[self reloadInBackground];
 }
 
@@ -80,17 +74,22 @@
 
 - (void)viewDidLoad{
     [super viewDidLoad];
-    [self reloadInBackgroundWithBlock:^(NSError *error) {
-        if(self.pullToRefreshEnabled)
-            self.pullToRefreshView = [[SSPullToRefreshView alloc] initWithScrollView:self.tableView delegate:self];
-        else
-            self.pullToRefreshView = nil;
-    }];
+    
+    if(self.pullToRefreshEnabled){
+        if (self.refreshHeaderView == nil) {
+            PF_EGORefreshTableHeaderView *egoView = [[PF_EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, 0.0f - self.tableView.bounds.size.height, self.view.frame.size.width, self.tableView.bounds.size.height)];
+            egoView.delegate = self;
+            [self.tableView addSubview:egoView];
+            self.refreshHeaderView = egoView;
+        }
+        [self.refreshHeaderView refreshLastUpdatedDate];
+    }
+    [self reloadInBackground];
 }
 
 - (void)viewDidUnload {
     [super viewDidUnload];
-    self.pullToRefreshView = nil;
+    self.refreshHeaderView = nil;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
@@ -110,28 +109,17 @@
     }
     
     if (self.displayedTitleKey.length > 0) {
-        // DKEntity and NSDictionary both implement objectForKey
         cell.textLabel.text = [object objectForKey:self.displayedTitleKey];
     }
     if (self.displayedImageKey.length > 0) {
-        // DKEntity and NSDictionary both implement objectForKey
         cell.imageView.image = [UIImage imageWithData:[object objectForKey:self.displayedImageKey]];
     }
     
     return cell;
-    
 }
 
 - (PFObject *)objectAtIndexPath:(NSIndexPath *)indexPath{
 	return [self.objects objectAtIndex:indexPath.row];
-}
-
-- (void)pullToRefreshViewDidStartLoading:(SSPullToRefreshView *)view {
-	[self loadObjects];
-}
-
-- (void)objectsWillLoad{
-	
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForNextPageAtIndexPath:(NSIndexPath *)indexPath{
@@ -143,22 +131,37 @@
 	}
 }
 
-- (void)scrollViewWillBeginDragging:(UIScrollView *)activeScrollView {
-    dispatch_queue_t q = [DKManager queue];
-    if(q){
-        dispatch_suspend(q);
-    }
+- (void)objectsWillLoad{
 }
 
-//- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
+- (void)objectsDidLoad:(NSError *)error{
+	if(self.pullToRefreshEnabled)
+        [self.refreshHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:self.tableView];
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    if(self.pullToRefreshEnabled)
+        [self.refreshHeaderView egoRefreshScrollViewDidScroll:scrollView];
+}
+
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
-    dispatch_queue_t q = [DKManager queue];
-    if(q){
-        dispatch_resume(q);
-    }
+    if(self.pullToRefreshEnabled)
+        [self.refreshHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
-//DKQueryTableViewController implementation
+- (void)egoRefreshTableHeaderDidTriggerRefresh:(PF_EGORefreshTableHeaderView*)view{
+	[self loadObjects];
+}
+
+- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(PF_EGORefreshTableHeaderView*)view{
+	return self.isLoading; 
+}
+
+- (NSDate*)egoRefreshTableHeaderDataSourceLastUpdated:(PF_EGORefreshTableHeaderView*)view{	
+	return [NSDate date];
+}
+
+//DKQueryTableViewController implementation (modified)
 //
 //  DKQueryTableViewController.m
 //  DataKit
@@ -247,9 +250,9 @@ DKSynthesize(currentOffset)
         [self postProcessResults];
         
         dispatch_async(q, ^{
-            [self queryTableWillReload];
+            [self objectsWillLoad];
 			[self.tableView reloadData];
-            [self queryTableDidReload];
+            [self objectsDidLoad:error];
             
             if (callback != NULL) {
                 callback(error);
@@ -278,6 +281,7 @@ DKSynthesize(currentOffset)
         q = [self queryForTable];
         qk = q.dkQuery;
     }
+    q.orSkip = self.orSkip;
     
     NSAssert(q != nil, @"query cannot be nil");
     
@@ -288,11 +292,13 @@ DKSynthesize(currentOffset)
     DKMapReduce *mr = [self tableQueryMapReduce];
     if (mr != nil) {
         [q performMapReduce:mr inBackgroundWithBlock:^(id result, NSError *error) {
+            self.orSkip = q.orSkip;
             [self processQueryResults:result error:error callback:callback];
         }];
     }
     else {
         [q findObjectsInBackgroundWithBlock:^(NSArray *results, NSError *error) {
+            self.orSkip = q.orSkip;
             [self processQueryResults:results error:error callback:callback];
         }];
     }
@@ -329,25 +335,9 @@ DKSynthesize(currentOffset)
     }
 }
 
-- (void)queryTableWillReload {
-	[self objectsWillLoad];
-    [self.pullToRefreshView startLoading];
-}
-
-- (void)queryTableDidReload {
-    [self.pullToRefreshView finishLoading];
-}
-
 - (void)postProcessResults {
     [self objectsDidLoad:nil];
 }
-
-//- (DKQuery *)tableQuery {
-//    DKQuery *q = [DKQuery queryWithEntityName:self.entityName];
-//    [q orderDescendingByCreationDate];
-    
-//    return q;
-//}
 
 - (DKMapReduce *)tableQueryMapReduce {
     return nil;

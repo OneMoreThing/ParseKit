@@ -10,6 +10,14 @@
 
 @implementation PFInstallation
 
-    +(PFInstallation *)currentInstallation{return [[self alloc]init];}
+static PFInstallation* current = nil;
+
++(PFInstallation *)currentInstallation{
+    if(!current){
+        current = [[self alloc]init];
+        //current = [[self alloc] initWithName:kInstallationClassName];
+    }
+    return current;
+}
 
 @end

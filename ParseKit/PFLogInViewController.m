@@ -50,26 +50,28 @@
 
 -(void) loginUser:(NSString*) facebookId{
     
-    PFQuery *query = [PFUser query];
-    [query whereKey:kUserFacebookIDKey equalTo:facebookId];
+    if(![PFUser currentUser]){
+        PFQuery *query = [PFUser query];
+        [query whereKey:kUserFacebookIDKey equalTo:facebookId];
     
-    NSError *error = nil;
-    NSArray *array = [query findObjects:&error];
-    if([array count] > 0)
-        [PFUser setCurrentUser:(PFUser*)[array objectAtIndex:0]];
-    else{
-        PFUser* newUser= [PFUser user];
-        if (facebookId && facebookId != 0) {
-            [newUser setObject:facebookId forKey:kUserFacebookIDKey];
-            BOOL saved = [newUser.dkEntity save];
-            if(!saved){
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post load/save user, server error" message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
-                [alert show];
-                [self logout];
-                return;                
+        NSError *error = nil;
+        NSArray *array = [query findObjects:&error];
+        if([array count] > 0)
+            [PFUser setCurrentUser:(PFUser*)[array objectAtIndex:0]];
+        else{
+            PFUser* newUser= [PFUser user];
+            if (facebookId && facebookId != 0) {
+                [newUser setObject:facebookId forKey:kUserFacebookIDKey];
+                BOOL saved = [newUser.dkEntity save];
+                if(!saved){
+                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Couldn't post load/save user, server error" message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
+                    [alert show];
+                    [self logout];
+                    return;
+                }
             }
+            [PFUser setCurrentUser:newUser];
         }
-        [PFUser setCurrentUser:newUser];
     }
     
     [self.delegate logInViewController:self didLogInUser: [PFUser currentUser]];    
@@ -107,6 +109,7 @@
 {
     [SCFacebook logoutCallBack:^(BOOL success, id result) {
         if (success) {
+            [PFUser logOut];
             self.button.enabled = YES;
         }
     }];

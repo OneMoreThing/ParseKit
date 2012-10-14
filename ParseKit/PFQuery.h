@@ -10,6 +10,7 @@
 
 @interface PFQuery : NSObject 
 @property (strong, nonatomic) DKQuery * dkQuery;
+@property (strong, nonatomic) NSMutableArray * orSkip;
 @property (nonatomic) NSInteger limit;
 @property (nonatomic,readwrite, assign) PFCachePolicy cachePolicy;
 

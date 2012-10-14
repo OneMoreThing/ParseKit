@@ -55,7 +55,7 @@
    if (obj != nil)
         return obj;
         
-   if([PFAdapterUtils isPFFileKey:key]){
+   if([PFApplicationKey isPFFileKey:key]){
       NSString *fileName= [self.dkEntity objectForKey:key];
        if(fileName){ //&& [DKFile fileExists:fileName]){
            PFFile *file = [PFFile fileWithData:nil];
@@ -65,7 +65,7 @@
        }
        return nil;
    }
-   else if([PFAdapterUtils isPFUserKey:key]){
+   else if([PFApplicationKey isPFUserKey:key]){
 	   NSString* userId = [self.dkEntity objectForKey:key];
 	   
 	   PFUser* current = [PFUser currentUser];
@@ -73,7 +73,7 @@
 		   return current;
 	   
        PFQuery *query = [PFUser query];
-       [query whereKey:@"_id" equalTo:userId];
+       [query.dkQuery whereEntityIdMatches:userId];
        NSError *error = nil;
        NSArray *array = [query findObjects:&error];
        if([array count] > 0){
@@ -82,11 +82,26 @@
            return user;
        }
    }
-   else if([PFAdapterUtils isPFGeoPointKey:key]){
+   else if([PFApplicationKey isPFGeoPointKey:key]){
 	   NSArray* arr = [self.dkEntity objectForKey:key];
 	   PFGeoPoint* point = [PFAdapterUtils convertObjToPF:arr];
        [self.pfCache setObject:point forKey:key];
 	   return point;
+   }
+   else if([PFApplicationKey isPFObjectKey:key]){
+       NSString* objId = [self.dkEntity objectForKey:key];
+       if(!objId)
+           return nil;
+       
+       PFQuery *query = [PFQuery queryWithClassName:[PFApplicationKey getPFObjectClassForKey:key]];
+       [query.dkQuery whereEntityIdMatches:objId];
+       NSError *error = nil;
+       NSArray *array = [query findObjects:&error];
+       if([array count] > 0){
+           PFObject* obj = (PFObject*)[array objectAtIndex:0];
+           [self.pfCache setObject:obj forKey:key];
+           return obj;
+       }
    }
    return [self.dkEntity objectForKey:key];
 }
@@ -97,7 +112,7 @@
 }
 
 - (void)removeObjectForKey:(NSString *)key{
-    if([PFAdapterUtils isPFFileKey:key]){
+    if([PFApplicationKey isPFFileKey:key]){
         NSString *fileName= [self.dkEntity objectForKey:key];
         if(fileName && [DKFile fileExists:fileName]){
             NSError *error = nil;

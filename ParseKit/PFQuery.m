@@ -110,17 +110,62 @@ NSInteger comparator(id id1, id id2, void *context)
     return ([entity2.createdAt compare:entity1.createdAt]);
 }
 
-//Inefficient method for simple orSubqueries
-- (NSArray *)findAll:(NSError **)error {
-    if(self.orSubqueries){
-        NSMutableArray* newArray = [[NSMutableArray alloc] init];
-        for (id el in self.orSubqueries) {
-            DKQuery* q = ((PFQuery*)el).dkQuery;
-           [newArray addObjectsFromArray:[q findAll:error]];
+- (NSArray *)findAllWithOrSubqueries:(NSError **)error {
+    //client-side orSubqueries
+    
+    if(!self.orSkip){
+        self.orSkip = [[NSMutableArray alloc] initWithCapacity:self.orSubqueries.count];
+        for (int x = 0; x < self.orSubqueries.count; x++){
+            [self.orSkip addObject:[NSNumber numberWithInt:0]];
         }
-        //hard-coded [query orderByDescending:@"createdAt"]; with sortedArrayUsingFunction   
-        return [newArray sortedArrayUsingFunction:comparator context:nil];
     }
+    
+    NSMutableArray* tmpResArray = [[NSMutableArray alloc] init];
+    NSMutableArray* qArray = [[NSMutableArray alloc] initWithCapacity:self.orSubqueries.count];
+    for (int i = 0; i < self.orSubqueries.count; i++){
+        DKQuery* q = ((PFQuery*)self.orSubqueries[i]).dkQuery;
+        q.limit = self.dkQuery.limit;
+        if(self.dkQuery.skip == 0)
+            self.orSkip[i] = [NSNumber numberWithInt:0];
+        q.skip = [((NSNumber*)self.orSkip[i]) integerValue];
+        
+        [q orderDescendingByCreationDate]; //order forced
+        NSArray* resArray = [q findAll:error];
+        //union client-side
+        [tmpResArray addObjectsFromArray:resArray];
+        //need for calc skip
+        [qArray addObject:resArray];
+    }
+    
+    //order forced with sortedArrayUsingFunction like [query orderDescendingByCreationDate];
+    NSArray* orderedArray = [tmpResArray sortedArrayUsingFunction:comparator context:nil];
+    
+    //calc result size
+    NSInteger limit = self.dkQuery.limit;
+    if(limit == 0) //skip ignored
+        return orderedArray;
+    if(orderedArray.count < limit)
+        limit = orderedArray.count;
+    
+    //truncate array and set skip for next page
+    NSMutableArray* resArray = [[NSMutableArray alloc] init];
+    for (int i = 0; i < limit; i++)
+    {
+        id obj = orderedArray[i];
+        [resArray addObject:obj];
+        for (int x = 0; x < self.orSubqueries.count; x++){
+            NSArray* subQueryResArr = qArray[x];
+            if([subQueryResArr containsObject:obj])
+                self.orSkip[x] = [NSNumber numberWithInt: [((NSNumber*)self.orSkip[x]) integerValue]+1];
+        }
+    }
+    
+    return resArray;
+}
+
+- (NSArray *)findAll:(NSError **)error {
+    if(self.orSubqueries)
+        return [self findAllWithOrSubqueries:error];
     return [self.dkQuery findAll:error];
 }
 

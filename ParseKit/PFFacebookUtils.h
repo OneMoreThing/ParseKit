@@ -19,7 +19,7 @@
     + (BOOL)handleOpenURL:(NSURL *)url;
 @end
 
-//Fast way, replace the only one occurrence for PF_FBRequestDelegate (in AppDelegate.h) with FBRequestDelegate
+//Fast way, replace the only one occurrence for PF_FBRequestDelegate (in AppDelegate.h for Anypic) with FBRequestDelegate
 /*
 @protocol PF_FBRequestDelegate <NSObject>
  @optional

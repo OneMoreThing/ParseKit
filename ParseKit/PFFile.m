@@ -7,41 +7,40 @@
 //
 
 #import "PFFile.h"
-
-@interface PFFile()
-    @property (nonatomic, strong) NSString * absoluteUrl;
-@end
+#import "EGOCache.h"
 
 @implementation PFFile
 
 @synthesize dkFile;
 
 - (BOOL)isDataAvailable {
-    if(self.absoluteUrl)
-        return YES;
-    else return (self.dkFile.data != nil ||  self.dkFile.name.length > 0); //[self url] != nil;
+    return (self.dkFile.data != nil ||  self.dkFile.name.length > 0);
 }
 
 - (NSString *)url {
-    if(self.absoluteUrl)
-        return self.absoluteUrl;
+    NSString* cachedUrl = [[EGOCache currentCache] stringForKey:self.dkFile.name];
+    if(cachedUrl)
+        return cachedUrl;
+    
     NSError *error = nil;
     NSURL * url = [self.dkFile generatePublicURL:&error];
-    self.absoluteUrl = [url absoluteString];
-    return self.url;
+    [[EGOCache currentCache] setString:[url absoluteString] forKey:self.dkFile.name];
+    return [url absoluteString];
 }
 
+/*
 - (void)urlInBackgroundWithBlock:(void (^)(NSURL *publicURL, NSError *error))block {
-    if(self.absoluteUrl){
-        block([NSURL URLWithString:self.absoluteUrl],nil);
+    NSString* cachedUrl = [[EGOCache currentCache] stringForKey:self.dkFile.name];
+    if(cachedUrl){
+        block([NSURL URLWithString:cachedUrl],nil);
         return;
     }
     [self.dkFile generatePublicURLInBackgroundWithBlock:^(NSURL *publicURL, NSError *error){
-        self.absoluteUrl = [publicURL absoluteString];
+        [[EGOCache currentCache] setString:[publicURL absoluteString] forKey:self.dkFile.name];
         block(publicURL,error);
     }];
 }
-
+*/
 
 + (id)fileWithData:(NSData *)data{
     PFFile *file = [[self alloc] init];
@@ -58,7 +57,11 @@
     dispatch_queue_t q = dispatch_get_current_queue();
     dispatch_async([DKManager queue], ^{
         NSError *error = nil;
-        NSData* data = [self.dkFile loadData:&error];
+        NSData* data = [[EGOCache currentCache] dataForKey:self.dkFile.name];
+        if(!data){
+            data = [self.dkFile loadData:&error];
+            [[EGOCache currentCache] setData:data forKey:self.dkFile.name];
+        }
         if (block != NULL) {
             dispatch_async(q, ^{
                 block(data, error);

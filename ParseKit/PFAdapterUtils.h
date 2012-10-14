@@ -15,8 +15,5 @@
     +(id)convertObjToDK:(id) obj;
     +(NSArray*)convertArrayToPF:(NSArray*) array;
     +(NSArray*)convertArrayToDK:(NSArray*) array;
-    +(BOOL)isPFFileKey:(NSString *)key;
-    +(BOOL)isPFUserKey:(NSString *)key;
-    +(BOOL)isPFGeoPointKey:(NSString *)key;
 
 @end

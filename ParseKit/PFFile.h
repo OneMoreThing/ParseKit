@@ -8,9 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface PFFile : NSObject {
-    DKFile * dkFile;
-}
+@interface PFFile : NSObject
 
 @property (strong, nonatomic) DKFile * dkFile;
 @property (readonly) NSString *url;
@@ -19,7 +17,5 @@
 + (id)fileWithData:(NSData *)data;
 - (void)saveInBackgroundWithBlock:(PFBooleanResultBlock)block;
 - (void)getDataInBackgroundWithBlock:(PFDataResultBlock)block;
-
-- (void)urlInBackgroundWithBlock:(void (^)(NSURL *publicURL, NSError *error))block;
 
 @end

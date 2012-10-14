@@ -21,6 +21,7 @@
 #import "PFTableViewCell.h"
 #import "PFQueryTableViewController.h"
 #import "PFAdapterUtils.h"
+#import "PFApplicationKey.h"
 #import "Facebook.h"
 #import "PFFacebookUtils.h"
 #import "PFLoginViewController.h"

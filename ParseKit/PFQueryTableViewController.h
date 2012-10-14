@@ -7,19 +7,18 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SSPullToRefreshView.h"
+#import "PF_EGORefreshTableHeaderView.h"
 
 
-@interface PFQueryTableViewController :  UITableViewController <SSPullToRefreshViewDelegate,UIScrollViewDelegate>
+@interface PFQueryTableViewController :  UITableViewController <PF_EGORefreshTableHeaderDelegate,UIScrollViewDelegate>
 
-@property (nonatomic, strong) SSPullToRefreshView *pullToRefreshView;
+@property (nonatomic, strong) PF_EGORefreshTableHeaderView * refreshHeaderView;
 @property (nonatomic, strong) NSString *className;
 @property (nonatomic, assign) BOOL pullToRefreshEnabled;
 @property (nonatomic, assign) BOOL paginationEnabled;
 @property (nonatomic,strong) NSString *keyToDisplay;
 
 - (id)initWithStyle:(UITableViewStyle)otherStyle;
-- (void)objectsDidLoad:(NSError *)error;
 - (PFQuery *)queryForTable;
 - (void)loadObjects;
 - (void)loadNextPage;
@@ -27,8 +26,9 @@
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
                         object:(PFObject *)object;
 - (PFObject *)objectAtIndexPath:(NSIndexPath *)indexPath;
-- (void)objectsWillLoad;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForNextPageAtIndexPath:(NSIndexPath *)indexPath;
+- (void)objectsWillLoad;
+- (void)objectsDidLoad:(NSError *)error;
 
 
 //DKQueryTableViewController implementation with PFQuery and PFTableViewCell
@@ -110,16 +110,6 @@
  @param block The block that is called when the reload finished.
  */
 - (void)reloadInBackgroundWithBlock:(void (^)(NSError *error))block;
-
-/**
- Called when the table is about to reload it's objects
- */
-- (void)queryTableWillReload;
-
-/**
- Called when the table did reload it's objects
- */
-- (void)queryTableDidReload;
 
 /**
  Give subclasses a chance to do custom post processing on the table objects on a different queue.

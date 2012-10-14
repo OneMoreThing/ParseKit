@@ -8,7 +8,19 @@
 
 #import "PFImageView.h"
 
+
 @implementation PFImageView
+
+
+@synthesize file = _file;
+
+-(void) setFile:(PFFile *)file{
+    if(_file && _file.isDataAvailable){
+        [_file.dkFile abort];
+        //[[AsyncImageLoader sharedLoader] cancelLoadingURL:self.imageURL target:self];
+    }
+    _file = file;
+}
 
 - (void)loadInBackground{
     [self loadInBackground:^(UIImage *image, NSError *error){
@@ -18,10 +30,21 @@
 }
 
 - (void)loadInBackground:(void (^)(UIImage *image, NSError *error))completion{
-    [self.file urlInBackgroundWithBlock:^(NSURL *publicURL, NSError *error){
-        [self setImageURL:publicURL];
-        completion(self.image, error);        
+    [self.file getDataInBackgroundWithBlock:^(NSData *data, NSError *error){
+        if(!error)
+            [self setImage: [UIImage imageWithData:data]];
+        completion(self.image, error);
     }];
 }
+
+/*
+- (void)loadInBackground:(void (^)(UIImage *image, NSError *error))completion{
+    [self.file urlInBackgroundWithBlock:^(NSURL *publicURL, NSError *error){
+        if(!error)
+            [self setImageURL:publicURL];
+        completion(self.image, error);
+    }];
+}
+*/
 
 @end
