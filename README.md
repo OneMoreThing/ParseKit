@@ -2,8 +2,7 @@ ParseKit
 ========
 
 ParseKit allows to use Anypic and Anywall (iOS apps by parse.com/anypic parse.com/anywall) self-hosted replacing the Parse.com framework with DataKit (open source) framework.
-ParseKit was developed to test DataKit, currently ParseKit is still inefficient but useful at least to evaluate the use of DataKit.
-ParseKit is currently under development, the goal is to create a framework for use Anypic and Anywall in a production environment, any help is welcome.
+ParseKit was developed only for test DataKit, ParseKit is inefficient but useful at least to evaluate the use of DataKit.
 
 Thanks to Erik for your great work with DataKit and thanks to Parse.com team for Anypic and Anywall.
 
@@ -49,17 +48,4 @@ To use Anypic or Anywall self-hosted with ParseKit you need to follow the follow
 See [FAQ](https://github.com/OneMoreThing/ParseKit/wiki/FAQ) page for common errors and resolution.
 
 
-TODO:
- 
--Integrate deployd.com as backend for ParseKit
-
--Add js API for Anypic-web site
-
--Add ACL (currently not implemented in DataKit)
-
--Option to store/load images on Amazon S3 bucket
-
--Add push notifications and async messaging (currently not implemented in DataKit)
-
--Develop an efficient way to implement Parse.com orQueryWithSubqueries
 
