@@ -6,8 +6,6 @@ ParseKit was developed only for test DataKit, ParseKit is inefficient but useful
 
 Thanks to Erik for your great work with DataKit and thanks to Parse.com team for Anypic and Anywall.
 
-**Author**: Denis Berton [@DenisBerton](https://twitter.com/DenisBerton)
-
 To use Anypic or Anywall self-hosted with ParseKit you need to follow the following steps:
 
 -download Anypic/Anywall repository
