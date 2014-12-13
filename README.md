@@ -1,5 +1,6 @@
 ParseKit
 ========
+**You can find an updated version with a working example on [AppCorner Social](https://github.com/appcornerit/AppCorner-Social)**
 
 ParseKit allows to use Anypic and Anywall (iOS apps by parse.com/anypic parse.com/anywall) self-hosted replacing the Parse.com framework with DataKit (open source) framework.
 ParseKit was developed only for test DataKit, ParseKit is inefficient but useful at least to evaluate the use of DataKit.
